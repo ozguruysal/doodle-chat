@@ -10,12 +10,19 @@
   --bg-header: #1a1a22;
   --bg-footer: #3798d4;
 
+  --border-base: #d4dade;
+  --border-radius: 0.25rem;
+
   --text-on-color: #fff;
 
   display: flex;
   flex-direction: column;
   height: 100dvh;
 }
+
+/* -------------------------------------- */
+/* Chat header
+/* -------------------------------------- */
 
 .chat-header {
   display: flex;
@@ -25,10 +32,40 @@
   color: var(--text-on-color);
 }
 
+/* -------------------------------------- */
+/* Chat message list
+/* -------------------------------------- */
+
 .message-list-wrapper {
   flex: 1;
   overflow-y: auto;
+
+  background-image: url(body-bg.png);
+  background-position: top left;
+  background-repeat: repeat;
 }
+
+.message-list {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: end;
+  gap: 1rem;
+  padding-block: 1.5rem;
+}
+
+.message-item {
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-base);
+  background-color: var(--bg-base);
+  max-width: 70%;
+}
+
+/* -------------------------------------- */
+/* Chat footer
+/* -------------------------------------- */
 
 .chat-footer {
   display: flex;
