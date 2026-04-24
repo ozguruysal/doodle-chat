@@ -1,31 +1,28 @@
-import { useEffect, useState } from "react";
-
-import { getMessages } from "../api/messages";
+import { handleApiError } from "../api/handle-api-error";
+import { useMessages } from "../hooks/use-messages";
 import { ChatFooter } from "./chat-footer";
 import { ChatHeader } from "./chat-header";
 import { MessageList } from "./message-list";
 
-import type { Message } from "../api/schemas";
-
 import styles from "../chat.module.css";
 
 export const ChatPage = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { data, isLoading, error } = useMessages({});
 
-  useEffect(() => {
-    getMessages()
-      .then((messages) => {
-        setMessages(messages);
-      })
-      .catch((error) => {
-        console.error("Error fetching messages:", error);
-      });
-  }, []);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    const errorMessage = handleApiError(error);
+
+    return <div>{errorMessage}</div>;
+  }
 
   return (
     <div className={styles["chat-page"]}>
       <ChatHeader />
-      <MessageList messages={messages} />
+      <MessageList messages={data || []} />
       <ChatFooter />
     </div>
   );
