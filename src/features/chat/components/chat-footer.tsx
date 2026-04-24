@@ -10,7 +10,7 @@ export function ChatFooter() {
     <footer className={styles["chat-footer"]}>
       <div className={clsx(styles["chat-container"], styles["chat-form"])}>
         <ChatInput placeholder="Message" aria-label="Write a message" />
-        <Button>Send</Button>
+        <Button className={styles["chat-submit-button"]}>Send</Button>
       </div>
     </footer>
   );
@@ -22,7 +22,10 @@ type ChatInputProps = TextFieldProps & {
 
 function ChatInput({ className, placeholder, ...otherProps }: ChatInputProps) {
   return (
-    <TextField className={className} {...otherProps}>
+    <TextField
+      className={clsx(styles["chat-text-field"], className)}
+      {...otherProps}
+    >
       <Input placeholder={placeholder} />
     </TextField>
   );
