@@ -9,11 +9,13 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecss": "tcm src --watch"
   },
   "dependencies": {
     "clsx": "^2.1.1",
     "react": "^19.2.5",
+    "react-aria-components": "^1.17.0",
     "react-dom": "^19.2.5",
     "zod": "^4.3.6"
   },
@@ -29,6 +31,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
     "prettier": "^3.8.3",
+    "typed-css-modules": "^0.9.1",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.10"
