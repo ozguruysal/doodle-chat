@@ -7,6 +7,8 @@ import { MessageList } from "./message-list";
 
 import type { Message } from "../api/schemas";
 
+import styles from "../chat.module.css";
+
 export const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -21,7 +23,7 @@ export const ChatPage = () => {
   }, []);
 
   return (
-    <div>
+    <div className={styles["chat-page"]}>
       <ChatHeader />
       <MessageList messages={messages} />
       <ChatFooter />

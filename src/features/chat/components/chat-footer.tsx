@@ -1,12 +1,17 @@
+import clsx from "clsx";
 import { Button, Input, TextField } from "react-aria-components";
 
 import type { TextFieldProps } from "react-aria-components";
 
+import styles from "../chat.module.css";
+
 export function ChatFooter() {
   return (
-    <footer>
-      <ChatInput placeholder="Message" aria-label="Write a message" />
-      <Button>Send</Button>
+    <footer className={styles["chat-footer"]}>
+      <div className={clsx(styles["chat-container"], styles["chat-form"])}>
+        <ChatInput placeholder="Message" aria-label="Write a message" />
+        <Button>Send</Button>
+      </div>
     </footer>
   );
 }

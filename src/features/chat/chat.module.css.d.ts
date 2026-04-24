@@ -1,0 +1,10 @@
+declare const styles: {
+  readonly "chat-container": string;
+  readonly "chat-footer": string;
+  readonly "chat-form": string;
+  readonly "chat-header": string;
+  readonly "chat-page": string;
+  readonly "message-list-wrapper": string;
+};
+export = styles;
+
