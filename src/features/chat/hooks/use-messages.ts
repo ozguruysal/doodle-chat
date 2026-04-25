@@ -9,5 +9,6 @@ export function useMessages(params: GetMessagesParams = {}) {
   return useQuery({
     queryKey: chatQueryKeys.messages(params),
     queryFn: () => getMessages(params),
+    refetchInterval: 3000,
   });
 }
