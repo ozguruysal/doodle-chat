@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import { useState } from "react";
 import { Button, Form, Input, TextField } from "react-aria-components";
 
 import { useCreateMessage } from "../hooks/use-create-message";
@@ -10,16 +9,7 @@ import type { TextFieldProps } from "react-aria-components";
 import styles from "../chat.module.css";
 
 export function ChatFooter() {
-  const [message, setMessage] = useState("");
-  const author = getUsername();
-
-  if (!author) {
-    throw new Error(
-      "Username is not set. Cannot send message without a username.",
-    );
-  }
-
-  const mutation = useCreateMessage({ author, message });
+  const mutation = useCreateMessage();
 
   function validate(value: string) {
     if (value.length > 500) {
@@ -29,26 +19,30 @@ export function ChatFooter() {
     return null;
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  function submitForm(formData: FormData) {
+    const author = getUsername();
+    const message = formData.get("message");
 
-    mutation.mutate();
+    if (!author) {
+      throw new Error(
+        "Username is not set. Cannot send message without a username.",
+      );
+    }
 
-    setMessage("");
+    mutation.mutate({ author, message: String(message) });
   }
 
   return (
     <footer className={styles["chat-footer"]}>
       <Form
         className={clsx(styles["chat-container"], styles["chat-form"])}
-        onSubmit={handleSubmit}
+        action={submitForm}
       >
         <ChatInput
           placeholder="Message"
           aria-label="Write a message"
           validate={validate}
-          value={message}
-          onChange={setMessage}
+          name="message"
           isRequired
         />
 

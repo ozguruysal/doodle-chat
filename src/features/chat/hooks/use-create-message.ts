@@ -4,8 +4,8 @@ import { createMessage } from "../api/messages";
 
 import type { CreateMessageParams } from "../api/messages";
 
-export function useCreateMessage(params: CreateMessageParams) {
+export function useCreateMessage() {
   return useMutation({
-    mutationFn: () => createMessage(params),
+    mutationFn: (params: CreateMessageParams) => createMessage(params),
   });
 }
