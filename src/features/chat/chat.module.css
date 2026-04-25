@@ -16,6 +16,10 @@
   --border-radius: 0.25rem;
 
   --text-on-color: #fff;
+  --text-muted: #4a4a4a;
+  --text-danger: #ff4d4d;
+
+  --text-sm: 0.875rem;
 
   display: flex;
   flex-direction: column;
@@ -36,6 +40,19 @@
 
 .chat-header h1 {
   font-size: 1.25rem;
+}
+
+.logout-button {
+  padding: 0;
+  background-color: transparent;
+  color: var(--text-on-color);
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  text-decoration: none;
 }
 
 /* -------------------------------------- */
@@ -111,22 +128,78 @@
   border-radius: var(--border-radius);
 }
 
-.chat-submit-button {
+.button {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 5.625rem;
-  height: 3rem;
-  flex-shrink: 0;
-  padding: 0.5rem 1rem;
-  background-color: var(--bg-btn);
-  color: var(--text-on-color);
   border: none;
   border-radius: var(--border-radius);
+  background-color: var(--bg-btn);
+  color: var(--text-on-color);
   cursor: pointer;
   transition: background-color 150ms;
 }
 
-.chat-submit-button:hover {
+.button:hover {
   background-color: var(--bg-btn-hover);
+}
+
+.chat-submit-button {
+  min-width: 5.625rem;
+  height: 3rem;
+  flex-shrink: 0;
+  padding: 0.5rem 1rem;
+}
+
+/* -------------------------------------- */
+/* Registration form
+/* -------------------------------------- */
+
+.register {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.register p {
+  margin-bottom: 1.5rem;
+}
+
+.register-textfield {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .register-textfield {
+    width: 24rem;
+  }
+}
+
+.register input {
+  border: 1px solid var(--border-base);
+  border-radius: var(--border-radius);
+  padding: 0.5rem 0.75rem;
+}
+
+.register-textfield span[slot="description"] {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.register-textfield span[slot="errorMessage"] {
+  font-size: var(--text-sm);
+  color: var(--text-danger);
+}
+
+.register .error-message {
+  font-size: var(--text-sm);
+  color: var(--text-danger);
+}
+
+.register-submit-button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
 }
