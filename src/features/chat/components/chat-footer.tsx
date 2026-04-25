@@ -10,7 +10,9 @@ export function ChatFooter() {
     <footer className={styles["chat-footer"]}>
       <div className={clsx(styles["chat-container"], styles["chat-form"])}>
         <ChatInput placeholder="Message" aria-label="Write a message" />
-        <Button className={styles["chat-submit-button"]}>Send</Button>
+        <Button className={clsx(styles["chat-submit-button"], styles.button)}>
+          Send
+        </Button>
       </div>
     </footer>
   );
