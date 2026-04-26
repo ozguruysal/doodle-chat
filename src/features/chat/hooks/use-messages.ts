@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 import { getMessages } from "../api/messages";
 import { chatQueryKeys } from "../api/query-keys";
@@ -60,32 +60,12 @@ export const useMessages = () => {
     refetchInterval: 3000, // Polling every 3 seconds
   });
 
-  // 3. COMBINE & DEDUPLICATE
   const allMessages = useMemo(() => {
     const combined = [...historicalMessages, ...(newMessages ?? [])];
+
     // Map helps remove duplicates by ID in case a message appears in both feeds
     return Array.from(new Map(combined.map((m) => [m._id, m])).values());
   }, [historicalMessages, newMessages]);
-
-  useEffect(() => {
-    console.log(
-      "useMessages re-rendered. infiniteData changed:",
-      !!infiniteData,
-    );
-  }, [infiniteData]);
-
-  useEffect(() => {
-    console.log("useMessages re-rendered. newMessages changed:", !!newMessages);
-  }, [newMessages]);
-
-  useEffect(() => {
-    if (infiniteData?.pages) {
-      console.log(
-        "Data successfully updated. Last page:",
-        infiniteData.pages[infiniteData.pages.length - 1],
-      );
-    }
-  }, [infiniteData]); // Only runs when data actually changes, not on every internal transition
 
   return {
     isLoading,

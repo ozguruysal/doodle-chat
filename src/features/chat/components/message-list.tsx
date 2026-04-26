@@ -1,16 +1,19 @@
 import { clsx } from "clsx";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import {
   Collection,
   GridList,
   GridListItem,
   GridListLoadMoreItem,
-  ProgressBar,
 } from "react-aria-components";
 
 import { useResizeObserver } from "../../../shared/hooks/use-resize-observer";
 import { handleApiError } from "../api/handle-api-error";
 
+import type {
+  FetchNextPageOptions,
+  InfiniteQueryObserverResult,
+} from "@tanstack/react-query";
 import type { GridListItemProps, GridListProps } from "react-aria-components";
 import type { Message } from "../api/schemas";
 
@@ -21,25 +24,17 @@ type MessageListProps<T extends object> = GridListProps<T> & {
   isLoading?: boolean;
   error: Error | null;
   hasMoreHistory: boolean;
-  loadMoreHistory: any;
+  loadMoreHistory: (
+    options?: FetchNextPageOptions,
+  ) => Promise<InfiniteQueryObserverResult>;
   isLoadingHistory?: boolean;
 };
 
-const isNearBottom = (element: HTMLElement, offset = 100) => {
+const isNearBottom = (element: HTMLElement, offset = 300) => {
   const { scrollTop, scrollHeight, clientHeight } = element;
 
   return scrollHeight - clientHeight - scrollTop < offset;
 };
-
-function setScrollFromBottom(element: HTMLElement, distance: number) {
-  const targetScrollTop =
-    element.scrollHeight - element.clientHeight - distance;
-
-  element.scrollTo({
-    top: targetScrollTop,
-    behavior: "smooth", // Optional: 'auto' for instant jump
-  });
-}
 
 export function MessageList<T extends object>({
   messages,
@@ -59,8 +54,14 @@ export function MessageList<T extends object>({
     ref: gridListRef,
 
     onResize: () => {
-      if (gridListRef.current && isNearBottom(gridListRef.current)) {
-        // bottomRef.current?.scrollIntoView();
+      const container = messageListref.current;
+
+      if (!container) {
+        return;
+      }
+
+      if (isNearBottom(container)) {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
       }
     },
   });
@@ -69,7 +70,9 @@ export function MessageList<T extends object>({
     <div
       ref={messageListref}
       className={styles["message-list-wrapper"]}
-      style={{ overflowAnchor: "none" }}
+      style={{
+        overflowAnchor: "none",
+      }}
     >
       {isLoading && messages.length === 0 && <div>Loading messages...</div>}
 
@@ -98,12 +101,15 @@ export function MessageList<T extends object>({
 
             const el = messageListref.current;
 
-            if (!el) return;
+            if (!el) {
+              return;
+            }
 
             const prevScrollTop = el.scrollTop;
             const prevScrollHeight = el.scrollHeight;
 
             console.log("fetching more messages...");
+
             await loadMoreHistory();
 
             requestAnimationFrame(() => {
