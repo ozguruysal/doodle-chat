@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import {
   Collection,
   GridList,
@@ -65,6 +65,17 @@ export function MessageList<T extends object>({
       }
     },
   });
+
+  // We do this to avoid scroll flicker
+  const hasInitialized = useRef(false);
+  useLayoutEffect(() => {
+    if (messages.length > 0 && !hasInitialized.current) {
+      requestAnimationFrame(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "auto" });
+        hasInitialized.current = true;
+      });
+    }
+  }, [messages.length]);
 
   return (
     <div
