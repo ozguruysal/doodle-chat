@@ -75,7 +75,7 @@
   align-items: start;
   justify-content: end;
   gap: 1rem;
-  padding-block: 1.5rem;
+  scroll-padding-block: 1.5rem;
 }
 
 .message-item {
