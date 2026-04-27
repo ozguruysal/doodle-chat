@@ -2,6 +2,7 @@ declare const styles: {
   readonly "button": string;
   readonly "chat-container": string;
   readonly "chat-footer": string;
+  readonly "chat-footer-error": string;
   readonly "chat-form": string;
   readonly "chat-header": string;
   readonly "chat-page": string;
