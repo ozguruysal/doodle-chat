@@ -10,13 +10,14 @@
   --bg-footer: #3798d4;
   --bg-btn: #ff876d;
   --bg-btn-hover: #ff6f4d;
-
+  --bg-message-sender: #fcf6c5;
   --border-base: #d4dade;
   --border-input: #2e77a4;
   --border-radius: 0.25rem;
 
   --text-on-color: #fff;
   --text-muted: #4a4a4a;
+  --text-pale: #b3bcc3;
   --text-danger: #ff4d4d;
 
   --text-sm: 0.875rem;
@@ -89,6 +90,17 @@
   width: max-content;
 
   max-width: max(15rem, 70%);
+}
+
+.message-author,
+.message-date {
+  color: var(--text-pale);
+  font-size: var(--text-sm);
+}
+
+.message-item.sender {
+  background-color: var(--bg-message-sender);
+  align-self: end;
 }
 
 @media (min-width: 640px) {
