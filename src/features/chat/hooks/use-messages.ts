@@ -4,6 +4,8 @@ import { useMemo } from "react";
 import { getMessages } from "../api/messages";
 import { chatQueryKeys } from "../api/query-keys";
 
+const PAGE_SIZE = 50;
+
 export const useMessages = () => {
   const {
     data: infiniteData,
@@ -18,7 +20,7 @@ export const useMessages = () => {
     queryFn: async ({ pageParam }) => {
       console.log("FETCH before =", pageParam);
 
-      const res = await getMessages({ limit: 10, before: pageParam });
+      const res = await getMessages({ limit: PAGE_SIZE, before: pageParam });
 
       console.log("RESULT length =", res.length);
 
