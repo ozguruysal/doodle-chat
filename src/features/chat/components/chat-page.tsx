@@ -12,7 +12,14 @@ import styles from "../chat.module.css";
 export const ChatPage = () => {
   const [hasUsername, setHasUsername] = useState(isUsernameSet());
 
-  const { data, isLoading, error } = useMessages({});
+  const {
+    messages,
+    isLoading,
+    error,
+    loadMoreHistory,
+    isLoadingHistory,
+    hasMoreHistory,
+  } = useMessages();
 
   return (
     <div className={styles["chat-page"]}>
@@ -23,9 +30,12 @@ export const ChatPage = () => {
           <ChatHeader setHasUsername={setHasUsername} />
 
           <MessageList
-            messages={data || []}
+            messages={messages || []}
             isLoading={isLoading}
             error={error}
+            hasMoreHistory={hasMoreHistory}
+            loadMoreHistory={loadMoreHistory}
+            isLoadingHistory={isLoadingHistory}
           />
 
           <ChatFooter />
