@@ -9,6 +9,8 @@ import {
 
 import { useResizeObserver } from "../../../shared/hooks/use-resize-observer";
 import { handleApiError } from "../api/handle-api-error";
+import { formatMessageDate } from "../utils/date";
+import { isCurrentUser } from "../utils/username";
 
 import type {
   FetchNextPageOptions,
@@ -149,14 +151,24 @@ type MessageItemProps = GridListItemProps & {
 };
 
 function MessageItem({ message, className, ...otherProps }: MessageItemProps) {
+  const isAuhtor = isCurrentUser(message.author);
+
   return (
     <GridListItem
       {...otherProps}
-      className={clsx(styles["message-item"], className)}
+      className={clsx(
+        styles["message-item"],
+        { [styles.sender]: isAuhtor },
+        className,
+      )}
     >
+      {!isAuhtor && (
+        <div className={styles["message-author"]}>{message.author}</div>
+      )}
+
       <div>{message.message}</div>
-      <div>
-        {message.author} - {message.createdAt}
+      <div className={styles["message-date"]}>
+        {formatMessageDate(message.createdAt)}
       </div>
     </GridListItem>
   );

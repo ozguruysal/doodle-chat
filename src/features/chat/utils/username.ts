@@ -22,3 +22,7 @@ export const saveUsername = (username: string) => {
 export const removeUsername = () => {
   localStorage.removeItem(USERNAME_KEY);
 };
+
+export const isCurrentUser = (author: string) => {
+  return author === getUsername();
+};
