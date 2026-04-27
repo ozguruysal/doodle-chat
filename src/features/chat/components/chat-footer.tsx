@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { useState } from "react";
 import { Button, Form, Input, TextField } from "react-aria-components";
 
 import { useCreateMessage } from "../hooks/use-create-message";
@@ -9,50 +10,65 @@ import type { TextFieldProps } from "react-aria-components";
 import styles from "../chat.module.css";
 
 export function ChatFooter() {
+  const [message, setMessage] = useState("");
+  const author = getUsername() || "";
+
   const mutation = useCreateMessage();
 
-  function validate(value: string) {
-    if (value.length > 500) {
-      return "Message must be less than 500 characters.";
+  const isEmpty = message.trim().length === 0;
+  const isMessageTooLong = message.length > 500;
+  const isAuthorMissing = !author;
+  const isInvalid = isEmpty || isMessageTooLong || isAuthorMissing;
+
+  const errorMessage = (() => {
+    if (isMessageTooLong) {
+      return "Message is too long (max 500 chars)";
+    }
+
+    if (isAuthorMissing) {
+      return "Please log in to send a message";
     }
 
     return null;
-  }
+  })();
 
-  function submitForm(formData: FormData) {
-    const author = getUsername();
-    const message = formData.get("message");
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
 
-    if (!author) {
-      throw new Error(
-        "Username is not set. Cannot send message without a username.",
-      );
+    if (!isInvalid) {
+      mutation.mutate({ author, message: message.trim() });
+      setMessage("");
     }
-
-    mutation.mutate({ author, message: String(message) });
   }
 
   return (
     <footer className={styles["chat-footer"]}>
-      <Form
-        className={clsx(styles["chat-container"], styles["chat-form"])}
-        action={submitForm}
-      >
-        <ChatInput
-          placeholder="Message"
-          aria-label="Write a message"
-          validate={validate}
-          name="message"
-          isRequired
-        />
-
-        <Button
-          type="submit"
-          className={clsx(styles["chat-submit-button"], styles.button)}
+      <div className={styles["chat-container"]}>
+        {errorMessage !== null && (
+          <div className={styles["chat-footer-error"]}>{errorMessage}</div>
+        )}
+        <Form
+          className={styles["chat-form"]}
+          onSubmit={handleSubmit}
+          validationBehavior="aria"
         >
-          Send
-        </Button>
-      </Form>
+          <ChatInput
+            placeholder="Message"
+            aria-label="Write a message"
+            name="message"
+            value={message}
+            onChange={setMessage}
+          />
+
+          <Button
+            type="submit"
+            className={clsx(styles["chat-submit-button"], styles.button)}
+            isDisabled={isInvalid || mutation.isPending}
+          >
+            Send
+          </Button>
+        </Form>
+      </div>
     </footer>
   );
 }

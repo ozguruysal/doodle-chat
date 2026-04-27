@@ -11,6 +11,8 @@
   --bg-btn: #ff876d;
   --bg-btn-hover: #ff6f4d;
   --bg-message-sender: #fcf6c5;
+  --bg-danger: #ff4d4d;
+
   --border-base: #d4dade;
   --border-input: #2e77a4;
   --border-radius: 0.25rem;
@@ -120,6 +122,19 @@
   background-color: var(--bg-footer);
 }
 
+.chat-footer .chat-container {
+  position: relative;
+}
+
+.chat-footer-error {
+  position: absolute;
+  background-color: var(--bg-danger);
+  color: var(--text-on-color);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  transform: translateY(-150%);
+}
+
 .chat-form {
   display: flex;
   align-items: center;
@@ -155,8 +170,13 @@
   transition: background-color 150ms;
 }
 
-.button:hover {
+.button:hover:not(:disabled) {
   background-color: var(--bg-btn-hover);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .chat-submit-button {
