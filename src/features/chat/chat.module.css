@@ -75,7 +75,10 @@
   align-items: start;
   justify-content: end;
   gap: 1rem;
-  scroll-padding-block: 1.5rem;
+
+  /* We add a transparent border here that mimics a bottom padding
+  to avoid fighting against it while scroll anchoring; */
+  border-bottom: 20px solid transparent;
 }
 
 .message-item {

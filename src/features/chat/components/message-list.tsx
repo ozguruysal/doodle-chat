@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { useLayoutEffect, useRef } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 import {
   Collection,
   GridList,
@@ -66,7 +66,7 @@ export function MessageList<T extends object>({
     },
   });
 
-  // We do this to avoid scroll flicker
+  // Minimizes scroll flicker on initial page load
   const hasInitialized = useRef(false);
   useLayoutEffect(() => {
     if (messages.length > 0 && !hasInitialized.current) {
@@ -77,14 +77,35 @@ export function MessageList<T extends object>({
     }
   }, [messages.length]);
 
+  const handleLoadMore = useCallback(async () => {
+    if (isLoadingHistory || !hasMoreHistory) {
+      return;
+    }
+
+    console.log("___onLoadMore triggerred___");
+
+    const el = messageListref.current;
+
+    if (!el) {
+      return;
+    }
+
+    const prevScrollTop = el.scrollTop;
+    const prevScrollHeight = el.scrollHeight;
+
+    console.log("fetching more messages...");
+
+    await loadMoreHistory();
+
+    requestAnimationFrame(() => {
+      const newScrollHeight = el.scrollHeight;
+
+      el.scrollTop = prevScrollTop + (newScrollHeight - prevScrollHeight);
+    });
+  }, [hasMoreHistory, isLoadingHistory, loadMoreHistory]);
+
   return (
-    <div
-      ref={messageListref}
-      className={styles["message-list-wrapper"]}
-      style={{
-        overflowAnchor: "none",
-      }}
-    >
+    <div ref={messageListref} className={styles["message-list-wrapper"]}>
       {isLoading && messages.length === 0 && <div>Loading messages...</div>}
 
       {error && messages.length === 0 && <div>{handleApiError(error)}</div>}
@@ -103,33 +124,7 @@ export function MessageList<T extends object>({
         renderEmptyState={() => <div>Loading...</div>}
       >
         <GridListLoadMoreItem
-          onLoadMore={async () => {
-            if (isLoadingHistory || !hasMoreHistory) {
-              return;
-            }
-
-            console.log("___onLoadMore triggerred___");
-
-            const el = messageListref.current;
-
-            if (!el) {
-              return;
-            }
-
-            const prevScrollTop = el.scrollTop;
-            const prevScrollHeight = el.scrollHeight;
-
-            console.log("fetching more messages...");
-
-            await loadMoreHistory();
-
-            requestAnimationFrame(() => {
-              const newScrollHeight = el.scrollHeight;
-
-              el.scrollTop =
-                prevScrollTop + (newScrollHeight - prevScrollHeight);
-            });
-          }}
+          onLoadMore={handleLoadMore}
           isLoading={isLoadingHistory}
         />
 
