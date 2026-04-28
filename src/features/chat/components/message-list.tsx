@@ -84,8 +84,6 @@ export function MessageList<T extends object>({
       return;
     }
 
-    console.log("___onLoadMore triggerred___");
-
     const el = messageListref.current;
 
     if (!el) {
@@ -94,8 +92,6 @@ export function MessageList<T extends object>({
 
     const prevScrollTop = el.scrollTop;
     const prevScrollHeight = el.scrollHeight;
-
-    console.log("fetching more messages...");
 
     await loadMoreHistory();
 

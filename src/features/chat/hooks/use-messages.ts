@@ -15,20 +15,16 @@ export const useMessages = () => {
   } = useInfiniteQuery({
     queryKey: chatQueryKeys.pagination(),
 
-    initialPageParam: new Date("2200-01-01").toISOString(), // We give a future date to get the latest N messages
+    // We give a future date to get the latest N messages
+    initialPageParam: new Date("2200-01-01").toISOString(),
 
     queryFn: async ({ pageParam }) => {
-      console.log("FETCH before =", pageParam);
-
       const res = await getMessages({ limit: PAGE_SIZE, before: pageParam });
-
-      console.log("RESULT length =", res.length);
 
       return res;
     },
 
     getNextPageParam: (lastPage) => {
-      console.log("lastPage", lastPage);
       if (!lastPage || lastPage.length === 0) {
         return undefined;
       }
@@ -58,14 +54,16 @@ export const useMessages = () => {
   } = useQuery({
     queryKey: chatQueryKeys.polling(latestTimestamp),
     queryFn: () => getMessages({ after: latestTimestamp }),
-    enabled: !!latestTimestamp, // Only poll if we have at least one message
-    refetchInterval: 3000, // Polling every 3 seconds
+    // Only poll if we have at least one message
+    enabled: Boolean(latestTimestamp),
+    // Polling
+    refetchInterval: 2000,
   });
 
   const allMessages = useMemo(() => {
     const combined = [...historicalMessages, ...(newMessages ?? [])];
 
-    // Map helps remove duplicates by ID in case a message appears in both feeds
+    // Remove duplicates by ID in case a message appears in both feeds
     return Array.from(new Map(combined.map((m) => [m._id, m])).values());
   }, [historicalMessages, newMessages]);
 
