@@ -1,6 +1,9 @@
 import { z } from "zod";
 
-const messageContentSchema = z.string().min(1).max(500);
+import { decodeHtml } from "../utils/decode-html";
+
+// We also decode HTML in message using transform
+const messageContentSchema = z.string().min(1).max(500).transform(decodeHtml);
 
 const authorNameSchema = z
   .string()
