@@ -34,10 +34,7 @@ export const useMessages = () => {
   });
 
   const historicalMessages = useMemo(() => {
-    return (infiniteData?.pages.flat() ?? []).sort(
-      (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-    );
+    return infiniteData?.pages.flat() ?? [];
   }, [infiniteData]);
 
   // We need the timestamp of the very last message we have
