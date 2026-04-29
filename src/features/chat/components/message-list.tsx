@@ -12,24 +12,14 @@ import { handleApiError } from "../api/handle-api-error";
 import { formatMessageDate } from "../utils/date";
 import { isCurrentUser } from "../utils/username";
 
-import type {
-  FetchNextPageOptions,
-  InfiniteQueryObserverResult,
-} from "@tanstack/react-query";
 import type { GridListItemProps, GridListProps } from "react-aria-components";
 import type { Message } from "../api/schemas";
+import type { useMessages } from "../hooks/use-messages";
 
 import styles from "../chat.module.css";
 
 type MessageListProps<T extends object> = GridListProps<T> & {
-  messages: Message[];
-  isLoading?: boolean;
-  error: Error | null;
-  hasMoreHistory: boolean;
-  loadMoreHistory: (
-    options?: FetchNextPageOptions,
-  ) => Promise<InfiniteQueryObserverResult>;
-  isLoadingHistory?: boolean;
+  messagesQuery: ReturnType<typeof useMessages>;
 };
 
 const isNearBottom = (element: HTMLElement, offset = 300) => {
@@ -39,18 +29,22 @@ const isNearBottom = (element: HTMLElement, offset = 300) => {
 };
 
 export function MessageList<T extends object>({
-  messages,
-  isLoading,
-  error,
+  messagesQuery,
   className,
-  hasMoreHistory,
-  loadMoreHistory,
-  isLoadingHistory,
   ...otherProps
 }: MessageListProps<T>) {
   const messageListref = useRef<HTMLDivElement | null>(null);
   const gridListRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  const {
+    messages,
+    error,
+    hasMoreHistory,
+    isLoading,
+    isLoadingHistory,
+    loadMoreHistory,
+  } = messagesQuery;
 
   useResizeObserver({
     ref: gridListRef,
