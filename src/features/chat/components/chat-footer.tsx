@@ -63,7 +63,7 @@ export function ChatFooter() {
           <Button
             type="submit"
             className={clsx(styles["chat-submit-button"], styles.button)}
-            isDisabled={isInvalid || mutation.isPending}
+            isDisabled={isInvalid}
           >
             Send
           </Button>
