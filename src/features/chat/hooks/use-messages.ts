@@ -42,6 +42,10 @@ export const useMessages = () => {
 
         return messages.reverse().flat();
       },
+
+      // We need this otherwise we get race conditions between this and polling query
+      // which results some messages to disappear momentarily.
+      refetchOnWindowFocus: false,
     });
 
   // In case cold start (no messages on page load), we will use this timestamp for polling.
