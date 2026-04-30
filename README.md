@@ -40,8 +40,8 @@ pnpm dev
 
 ## 📝 TODO Checklist
 
+- [x] Implement optimistic UI updates for sending messages
 - [ ] Add unit and integration tests
-- [ ] Implement optimistic UI updates for sending messages
 - [ ] Implement a retry mechanism for messages failed to be sent
 - [ ] Implement cache clearing logic on user logout
 - [ ] Add toast messages for errors
