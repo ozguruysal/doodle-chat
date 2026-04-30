@@ -3,7 +3,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { getMessages } from "../api/messages";
 import { chatQueryKeys } from "../api/query-keys";
@@ -44,6 +44,9 @@ export const useMessages = () => {
       },
     });
 
+  // In case cold start (no messages on page load), we will use this timestamp for polling.
+  const mountTimestamp = useRef(new Date().toISOString());
+
   // Polling query for fetching new messages
   const { data: newMessages, isFetching: isFetchingNewMessages } = useQuery({
     queryKey: chatQueryKeys.poll(),
@@ -54,13 +57,16 @@ export const useMessages = () => {
         chatQueryKeys.list(),
       );
       const lastPage = data?.pages[0];
-      const lastMessage = lastPage ? lastPage[lastPage?.length - 1] : undefined;
+      const lastMessage =
+        lastPage && lastPage.length > 0
+          ? lastPage[lastPage?.length - 1]
+          : undefined;
 
-      if (!lastMessage) {
-        return [];
-      }
+      const after = lastMessage
+        ? lastMessage.createdAt
+        : mountTimestamp.current;
 
-      const res = await getMessages({ after: lastMessage.createdAt });
+      const res = await getMessages({ after });
 
       return res;
     },
@@ -92,11 +98,11 @@ export const useMessages = () => {
           return old;
         }
 
-        const lastPage = [...old.pages[0]];
+        const lastPageUpdated = [...old.pages[0], ...filteredNewMessages];
 
         return {
           ...old,
-          pages: [[...lastPage, ...filteredNewMessages], ...old.pages.slice(1)],
+          pages: [lastPageUpdated, ...old.pages.slice(1)],
         };
       },
     );

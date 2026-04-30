@@ -34,11 +34,11 @@ export function useCreateMessage() {
             return old;
           }
 
-          const updatedPages = [...old.pages[0], optimisticMessage];
+          const lastPageUpdated = [...old.pages[0], optimisticMessage];
 
           return {
             ...old,
-            pages: [updatedPages, ...old.pages.slice(1)],
+            pages: [lastPageUpdated, ...old.pages.slice(1)],
           };
         },
       );
