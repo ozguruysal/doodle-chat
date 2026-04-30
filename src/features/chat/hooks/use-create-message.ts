@@ -8,7 +8,7 @@ import type { CreateMessageParams } from "../api/messages";
 import type { Message } from "../api/schemas";
 
 export function useCreateMessage() {
-  const queryKey = chatQueryKeys.pagination();
+  const queryKey = chatQueryKeys.list();
 
   return useMutation({
     mutationFn: (params: CreateMessageParams) => createMessage(params),

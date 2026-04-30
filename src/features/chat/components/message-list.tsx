@@ -38,12 +38,12 @@ export function MessageList<T extends object>({
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   const {
-    messages,
     error,
+    fetchHistory,
     hasMoreHistory,
-    isLoading,
-    isLoadingHistory,
-    loadMoreHistory,
+    isFetchingHistory,
+    isFetchingNewMessages,
+    messages,
   } = messagesQuery;
 
   useResizeObserver({
@@ -74,7 +74,7 @@ export function MessageList<T extends object>({
   }, [messages.length]);
 
   const handleLoadMore = useCallback(async () => {
-    if (isLoadingHistory || !hasMoreHistory) {
+    if (isFetchingHistory || !hasMoreHistory) {
       return;
     }
 
@@ -87,18 +87,20 @@ export function MessageList<T extends object>({
     const prevScrollTop = el.scrollTop;
     const prevScrollHeight = el.scrollHeight;
 
-    await loadMoreHistory();
+    await fetchHistory();
 
     requestAnimationFrame(() => {
       const newScrollHeight = el.scrollHeight;
 
       el.scrollTop = prevScrollTop + (newScrollHeight - prevScrollHeight);
     });
-  }, [hasMoreHistory, isLoadingHistory, loadMoreHistory]);
+  }, [fetchHistory, hasMoreHistory, isFetchingHistory]);
 
   return (
     <div ref={messageListref} className={styles["message-list-wrapper"]}>
-      {isLoading && messages.length === 0 && <div>Loading messages...</div>}
+      {isFetchingNewMessages && messages.length === 0 && (
+        <div>Loading messages...</div>
+      )}
 
       {error && messages.length === 0 && <div>{handleApiError(error)}</div>}
 
@@ -117,7 +119,7 @@ export function MessageList<T extends object>({
       >
         <GridListLoadMoreItem
           onLoadMore={handleLoadMore}
-          isLoading={isLoadingHistory}
+          isLoading={isFetchingHistory}
         />
 
         <Collection items={messages}>
