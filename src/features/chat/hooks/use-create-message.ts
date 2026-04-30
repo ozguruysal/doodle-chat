@@ -48,7 +48,8 @@ export function useCreateMessage() {
 
     onSettled: async (newMessage, error, _, onMutateResult, context) => {
       if (error) {
-        // do something
+        console.error("Error sending message!");
+        // TODO: We need a better error handling here and a retry logic.
       }
 
       context.client.setQueryData(
