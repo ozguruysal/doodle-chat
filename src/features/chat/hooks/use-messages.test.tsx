@@ -1,7 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { resetMessageDatabase } from "../../../tests/mocks/handlers";
+import { createMessage } from "../api/messages";
+import { chatQueryKeys } from "../api/query-keys";
 import { useMessages } from "./use-messages";
 
 // Mock VITE_API_URL for the api-client
@@ -12,64 +16,78 @@ const createWrapper = () => {
     defaultOptions: {
       queries: {
         retry: false,
+        gcTime: 0,
       },
     },
   });
-  return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+  return {
+    queryClient,
+    wrapper: ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    ),
+  };
 };
 
 describe("useMessages", () => {
-  it("should fetch initial messages", async () => {
-    const { result } = renderHook(() => useMessages(), {
-      wrapper: createWrapper(),
-    });
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    // MSW returns 100 messages because of the way useInfiniteQuery and our mock interact on mount
-    expect(result.current.messages.length).toBeGreaterThan(0);
-    expect(result.current.messages[0]._id).toBeDefined();
+  beforeEach(() => {
+    resetMessageDatabase();
   });
 
-  it("should fetch older messages when fetchHistory is called", async () => {
-    const { result } = renderHook(() => useMessages(), {
-      wrapper: createWrapper(),
-    });
+  it("should fetch the latest 50 messages initially", async () => {
+    const { wrapper } = createWrapper();
+    const { result } = renderHook(() => useMessages(), { wrapper });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
+    expect(result.current.messages).toHaveLength(50);
+    // latest is msg-150, oldest in this page is msg-101
+    expect(
+      result.current.messages[result.current.messages.length - 1]._id,
+    ).toBe("msg-150");
+    expect(result.current.messages[0]._id).toBe("msg-101");
+  });
+
+  it("should fetch history when fetchHistory is called", async () => {
+    const { wrapper } = createWrapper();
+    const { result } = renderHook(() => useMessages(), { wrapper });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
     const initialCount = result.current.messages.length;
 
     await result.current.fetchHistory();
 
-    await waitFor(
-      () => {
-        expect(result.current.messages.length).toBeGreaterThan(initialCount);
-      },
-      { timeout: 3000 },
-    );
-
-    // Check if older messages are prepended (historical messages have msg-100+ IDs in our mock)
-    expect(
-      result.current.messages.some((m) => m._id.startsWith("msg-100")),
-    ).toBe(true);
-  });
-
-  it("should poll for new messages", async () => {
-    const { result } = renderHook(() => useMessages(), {
-      wrapper: createWrapper(),
+    await waitFor(() => {
+      expect(result.current.messages.length).toBe(initialCount + 50);
     });
 
+    // Older messages (msg-51 to msg-100) should be prepended
+    expect(result.current.messages[0]._id).toBe("msg-51");
+  });
+
+  it("should receive new messages via polling", async () => {
+    const { wrapper, queryClient } = createWrapper();
+    const { result } = renderHook(() => useMessages(), { wrapper });
+
     await waitFor(() => expect(result.current.isLoading).toBe(false));
+    const countBeforePolling = result.current.messages.length;
 
-    // Instead of fake timers which are tricky with TanStack query,
-    // we wait for the polling interval (3s) or just verify the logic if we can trigger it.
-    // Given the timeout issues, let's verify that polling exists
-    expect(result.current.isFetchingNewMessages).toBeDefined();
+    // Simulate someone else sending a message
+    await createMessage({
+      message: "External new message",
+      author: "OtherUser",
+    });
 
-    // We'll skip the actual wait in unit tests to keep them fast,
-    // but ensure the hook returns the right structure.
+    // Instead of waiting for 3s, we manually trigger the polling query to refetch
+    // This is a reliable way to test the CACHE UPDATE logic in useMessages
+    await queryClient.refetchQueries({ queryKey: chatQueryKeys.poll() });
+
+    // Verify the new message appeared in the list (hook's useEffect should have updated the cache)
+    await waitFor(() => {
+      expect(result.current.messages.length).toBe(countBeforePolling + 1);
+    });
+
+    expect(
+      result.current.messages[result.current.messages.length - 1].message,
+    ).toBe("External new message");
   });
 });
