@@ -18,6 +18,7 @@ This project focuses on implementing a complex data-fetching pattern:
 - **UI Components:** `react-aria-components`
 - **Validation:** `zod`
 - **Styling:** CSS Modules
+- **Testing:** `Vitest`, `React Testing Library`, `MSW` (Mock Service Worker)
 
 ## ⚙️ Local Setup
 
@@ -38,10 +39,22 @@ pnpm install
 pnpm dev
 ```
 
+### 3. Testing
+
+The project uses Vitest for unit and integration testing, with MSW to mock API responses for predictable results.
+
+```bash
+# Run tests
+pnpm test
+
+# Run tests in UI mode
+pnpm test:ui
+```
+
 ## 📝 TODO Checklist
 
 - [x] Implement optimistic UI updates for sending messages
-- [ ] Add unit and integration tests
+- [x] Add unit and integration tests
 - [ ] Implement a retry mechanism for messages failed to be sent
 - [ ] Implement cache clearing logic on user logout
 - [ ] Add toast messages for errors
