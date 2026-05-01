@@ -1,0 +1,7 @@
+# Generated CSS types
+**/*.css.d.ts
+
+# Dependencies and build outputs
+node_modules
+dist
+pnpm-lock.yaml
