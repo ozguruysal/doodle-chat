@@ -2,22 +2,26 @@ import { http, HttpResponse } from "msw";
 
 const BASE_URL = "http://localhost:3000/api/v1";
 
+const createInitialMessages = () => {
+  return Array.from({ length: 150 }).map((_, i) => {
+    const time = new Date();
+    // Ensure strict chronological order
+    time.setMinutes(time.getMinutes() - (150 - i) * 10);
+
+    return {
+      _id: `msg-${i + 1}`,
+      message: `Historical message ${i + 1}`,
+      author: i % 2 === 0 ? "UserA" : "UserB",
+      createdAt: time.toISOString(),
+    };
+  });
+};
+
 /**
  * A stateful in-memory store for messages.
  * Kept sorted oldest-to-newest (ascending).
  */
-let messageDatabase = Array.from({ length: 150 }).map((_, i) => {
-  const time = new Date();
-  // Ensure strict chronological order
-  time.setMinutes(time.getMinutes() - (150 - i) * 10);
-
-  return {
-    _id: `msg-${i + 1}`,
-    message: `Historical message ${i + 1}`,
-    author: i % 2 === 0 ? "UserA" : "UserB",
-    createdAt: time.toISOString(),
-  };
-});
+let messageDatabase = createInitialMessages();
 
 export const handlers = [
   http.get(`${BASE_URL}/messages`, ({ request }) => {
@@ -28,12 +32,10 @@ export const handlers = [
 
     if (before) {
       const beforeTime = new Date(before).getTime();
-      // Find the index of the first message that is NOT older than "before"
       const index = messageDatabase.findIndex(
         (m) => new Date(m.createdAt).getTime() >= beforeTime,
       );
 
-      // If no message is newer, index is -1, meaning all messages are older
       const end = index === -1 ? messageDatabase.length : index;
       const start = Math.max(0, end - limit);
 
@@ -42,7 +44,6 @@ export const handlers = [
 
     if (after) {
       const afterTime = new Date(after).getTime();
-      // Find the index of the first message that is strictly newer than "after"
       const index = messageDatabase.findIndex(
         (m) => new Date(m.createdAt).getTime() > afterTime,
       );
@@ -73,15 +74,5 @@ export const handlers = [
 ];
 
 export const resetMessageDatabase = () => {
-  messageDatabase = Array.from({ length: 150 }).map((_, i) => {
-    const time = new Date();
-    time.setMinutes(time.getMinutes() - (150 - i) * 10);
-
-    return {
-      _id: `msg-${i + 1}`,
-      message: `Historical message ${i + 1}`,
-      author: i % 2 === 0 ? "UserA" : "UserB",
-      createdAt: time.toISOString(),
-    };
-  });
+  messageDatabase = createInitialMessages();
 };
