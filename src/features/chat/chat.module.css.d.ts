@@ -1,5 +1,5 @@
 declare const styles: {
-  readonly "button": string;
+  readonly button: string;
   readonly "chat-container": string;
   readonly "chat-footer": string;
   readonly "chat-footer-error": string;
@@ -15,10 +15,9 @@ declare const styles: {
   readonly "message-item": string;
   readonly "message-list": string;
   readonly "message-list-wrapper": string;
-  readonly "register": string;
+  readonly register: string;
   readonly "register-submit-button": string;
   readonly "register-textfield": string;
-  readonly "sender": string;
+  readonly sender: string;
 };
 export = styles;
-
