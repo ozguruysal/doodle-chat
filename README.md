@@ -55,7 +55,7 @@ pnpm test:ui
 
 - [x] Implement optimistic UI updates for sending messages
 - [x] Add unit and integration tests
+- [x] Implement cache clearing logic on user logout
 - [ ] Implement a retry mechanism for messages failed to be sent
-- [ ] Implement cache clearing logic on user logout
 - [ ] Add toast messages for errors
 - [ ] Implement "New Messages" toast/indicator when user scrolled up

@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "react-aria-components";
 
 import { getUsername, isUsernameSet, removeUsername } from "../utils/username";
@@ -9,6 +10,8 @@ export function ChatHeader({
 }: {
   setHasUsername: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const queryClient = useQueryClient();
+
   return (
     <header className={styles["chat-header"]}>
       <div className={styles["chat-container"]}>
@@ -21,6 +24,7 @@ export function ChatHeader({
               className={styles["logout-button"]}
               onClick={() => {
                 removeUsername();
+                queryClient.clear();
                 setHasUsername(false);
               }}
             >
