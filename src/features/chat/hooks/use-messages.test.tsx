@@ -7,9 +7,15 @@ import { resetMessageDatabase } from "../../../tests/mocks/handlers";
 import { createMessage } from "../api/messages";
 import { chatQueryKeys } from "../api/query-keys";
 import { useMessages } from "./use-messages";
+import { isUsernameSet } from "../utils/username";
 
 // Mock VITE_API_URL for the api-client
 vi.stubEnv("VITE_API_URL", "http://localhost:3000/api/v1");
+
+// Mock isUsernameSet
+vi.mock("../utils/username", () => ({
+  isUsernameSet: vi.fn(() => true),
+}));
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -31,6 +37,7 @@ const createWrapper = () => {
 describe("useMessages", () => {
   beforeEach(() => {
     resetMessageDatabase();
+    vi.mocked(isUsernameSet).mockReturnValue(true);
   });
 
   it("should fetch the latest 50 messages initially", async () => {

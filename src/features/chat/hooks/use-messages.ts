@@ -7,6 +7,7 @@ import { useEffect, useRef } from "react";
 
 import { getMessages } from "../api/messages";
 import { chatQueryKeys } from "../api/query-keys";
+import { isUsernameSet } from "../utils/username";
 
 import type { InfiniteData } from "@tanstack/react-query";
 import type { Message } from "../api/schemas";
@@ -46,6 +47,7 @@ export const useMessages = () => {
       // We need this otherwise we get race conditions between this and polling query
       // which results some messages to disappear momentarily.
       refetchOnWindowFocus: false,
+      enabled: isUsernameSet(),
     });
 
   // In case cold start (no messages on page load), we will use this timestamp for polling.
@@ -76,6 +78,7 @@ export const useMessages = () => {
     },
 
     refetchInterval: 3000,
+    enabled: isUsernameSet(),
   });
 
   useEffect(() => {
