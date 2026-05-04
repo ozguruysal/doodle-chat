@@ -54,6 +54,9 @@ The project follows a feature-based structure located in `src/features/`. The pr
 - **Infinite Scrolling:** Implemented using `useInfiniteQuery` with the `before` parameter for historical data.
 - **Polling:** Implemented using a separate `useQuery` with `refetchInterval` for new messages, which manually updates the infinite query's cache.
 - **Scroll Management:** `MessageList` uses `useLayoutEffect` and `ResizeObserver` to maintain scroll position when content is prepended or appended.
+- **Session-Aware Data Fetching:**
+  - **Cache Security:** React Query cache is automatically cleared (`queryClient.clear()`) on user logout to prevent session data persistence.
+  - **Auth-Gated Queries:** All primary data-fetching and polling queries use `isUsernameSet()` as an `enabled` condition, ensuring no background network activity occurs when a user is logged out.
 
 ## Testing
 
